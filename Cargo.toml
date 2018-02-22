@@ -1,0 +1,7 @@
+[package]
+name = "table-test"
+version = "0.1.0"
+authors = ["nathaniel <nathaniel.simard.1@ulaval.ca>"]
+
+[dependencies]
+ansi_term = "0.9"
