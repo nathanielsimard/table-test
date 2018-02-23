@@ -12,7 +12,7 @@ fn incorrect_add(val_1: i64, val_2: i64, _val_3: i64) -> i64 {
 #[test]
 fn given_correct_add_function_when_use_table_test_then_no_panic() {
     let table = table_test!(
-        "correct_add",
+        correct_add,
         [
             ((1, 2, 0), 3),
             ((1, 5, 1), 7),

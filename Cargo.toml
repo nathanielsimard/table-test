@@ -5,3 +5,4 @@ authors = ["nathaniel <nathaniel.simard.1@ulaval.ca>"]
 
 [dependencies]
 ansi_term = "0.9"
+difference = "2.0"

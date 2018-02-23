@@ -1,38 +1,37 @@
 use std::iter::Iterator;
 use std::vec::IntoIter;
 use std::rc::Rc;
-use std::sync::Mutex;
+use std::cell::RefCell;
 use std::fmt::Debug;
-
-use validator;
 use validator::Validator;
+use ansi_term::Colour::*;
 
 pub struct Table<I, E> {
     values: IntoIter<(I, E)>,
     name: String,
-    failed: Rc<Mutex<usize>>,
+    nb_failed: Rc<RefCell<usize>>,
     number_of_tests: usize,
 }
 
-pub fn new<I, E>(name: &str, vec: Vec<(I, E)>) -> Table<I, E> {
-    println!("\n");
-    Table {
-        number_of_tests: vec.len(),
-        values: vec.into_iter(),
-        failed: Rc::new(Mutex::new(0)),
-        name: String::from(name),
+impl<I, E> Table<I, E> {
+    pub fn new(name: &str, vec: Vec<(I, E)>) -> Table<I, E> {
+        Table {
+            number_of_tests: vec.len(),
+            values: vec.into_iter(),
+            nb_failed: Rc::new(RefCell::new(0)),
+            name: String::from(name),
+        }
     }
 }
 
 impl<I, E> Drop for Table<I, E> {
     fn drop(&mut self) {
-        let failed = *self.failed.lock().unwrap();
-        if failed > 0 {
-            println!(
-                "{} passed {} failed\n",
-                self.number_of_tests - failed,
-                failed
-            );
+        let nb_failed = *self.nb_failed.borrow_mut();
+        if nb_failed > 0 {
+            println!("\n--------------------");
+            let nb_passed = Green.bold().paint(format!("{}", self.number_of_tests - nb_failed));
+            let nb_failed = Red.bold().paint(format!("{}", nb_failed));
+            println!("{} Passed {} Failed\n", nb_passed, nb_failed);
             panic!("Test Failed");
         }
     }
@@ -47,7 +46,7 @@ impl<I: Debug, E: Debug> Iterator for Table<I, E> {
             Some(value) => {
                 let inputs = format!("{:?}", value.0);
                 let result = (
-                    validator::new(self.name.clone(), inputs, Rc::clone(&self.failed)),
+                    Validator::new(self.name.clone(), inputs, Rc::clone(&self.nb_failed)),
                     value.0,
                     value.1,
                 );
@@ -66,7 +65,7 @@ mod tests {
     #[test]
     #[should_panic]
     pub fn given_ugly_names_when_validate_is_beautiful_then_table_panic() {
-        let table = new(
+        let table = Table::new(
             "name is beatiful",
             vec![
                 ("an ugly name", false),
@@ -83,7 +82,7 @@ mod tests {
 
     #[test]
     pub fn given_wonderful_names_when_validate_is_beautiful_then_table_dont_panic() {
-        let table = new(
+        let table = Table::new(
             "name is beatiful",
             vec![("a beautiful name", true), ("an amazing name", true)],
         );

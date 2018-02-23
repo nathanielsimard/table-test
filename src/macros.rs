@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! table_test {
     ($n:expr, $v:expr) => {
-        $crate::table::new($n, $v.to_vec())
+        $crate::table::Table::new(stringify!($n), $v.to_vec())
     };
 }
