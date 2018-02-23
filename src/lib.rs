@@ -2,104 +2,51 @@ extern crate ansi_term;
 
 use std::iter::Iterator;
 use std::vec::IntoIter;
-use std::fmt::Debug;
-use ansi_term::Colour::*;
-use ansi_term::Style;
+use std::rc::Rc;
 use std::sync::Mutex;
 
-struct Table<T> {
-    values: Mutex<IntoIter<T>>,
-    validator: Validator,
-}
+mod validator;
+use validator::Validator;
+use std::fmt::Debug;
 
-struct Validator {
+struct Table<I, E> {
+    values: IntoIter<(I, E)>,
     name: String,
-    output: Mutex<Vec<String>>,
-    number_failed: Mutex<usize>,
+    failed: Rc<Mutex<usize>>,
 }
-fn new<T>(name: &str, vec: Vec<T>) -> Table<T> {
+
+fn new<I, E>(name: &str, vec: Vec<(I, E)>) -> Table<I, E> {
     Table {
-        values: Mutex::new(vec.into_iter()),
-        validator: Validator {
-            name: String::from(name),
-            output: Mutex::new(vec![]),
-            number_failed: Mutex::new(0),
-        },
+        values: vec.into_iter(),
+        failed: Rc::new(Mutex::new(0)),
+        name: String::from(name),
     }
 }
 
-impl Validator {
-    pub fn assert_eq<T: PartialEq + Debug>(&self, expected: T, actual: T, comment: &str) {
-        let mut output = self.output.lock().unwrap();
-        if expected != actual {
-            let mut data = self.number_failed.lock().unwrap();
-            *data += 1;
-            output.push(String::from(format!(
-                "[{}]\n  {} {}\n  {} {}\n  {} {}\n  -  {}:\n\t{:?}\n  -  {}:\n\t{:?}",
-                Style::new()
-                    .bold()
-                    .paint(format!("{}", Red.paint("Failed"))),
-                Cyan.paint("Given"),
-                comment,
-                Cyan.paint("When"),
-                self.name,
-                Cyan.paint("Then"),
-                comment,
-                Cyan.paint("Expected"),
-                expected,
-                Cyan.paint("Actual"),
-                actual
-            )));
-        } else {
-            output.push(String::from(format!(
-                "[{}]\n  {} {}\n  {} {}\n  {} {}",
-                Style::new()
-                    .bold()
-                    .paint(format!("{}", Green.paint("Passed"))),
-                Cyan.paint("Given"),
-                comment,
-                Cyan.paint("When"),
-                comment,
-                Cyan.paint("Then"),
-                comment,
-            )));
-        }
-    }
-
-    fn format(&self) {
-        let data = self.number_failed.lock().unwrap();
-        let output = self.output.lock().unwrap();
-        println!("\n----------------------------------------");
-        println!(
-            "Result: {} failed {} passed\n",
-            Red.paint(format!("{}", data)),
-            Green.paint(format!("{}", (output.len() - *data))),
-        );
-        for output in output.iter() {
-            println!("{}\n", output);
-        }
-        println!("\n----------------------------------------");
-        if *data > 0 {
-            panic!("Test Failed");
-        }
-    }
-}
-
-impl<T> Drop for Table<T> {
+impl<I, E> Drop for Table<I, E> {
     fn drop(&mut self) {
-        self.validator.format();
+        let failed = *self.failed.lock().unwrap();
+        if failed > 0 {
+            panic!("{} test failed", failed);
+        }
     }
 }
 
-impl<'a, T> Iterator for &'a Table<T> {
-    type Item = (&'a Validator, T);
+impl<I: Debug, E: Debug> Iterator for Table<I, E> {
+    type Item = (Validator, I, E);
     fn next(&mut self) -> Option<Self::Item> {
-        let mut values = self.values.lock().unwrap();
-        let items = values.next();
+        let items = self.values.next();
+
         match items {
             Some(value) => {
-                let result = (&self.validator, value);
-                return Some(result);
+                let inputs = format!("{:?}", value.0);
+                let result = (
+                    validator::new(self.name.clone(), inputs, Rc::clone(&self.failed)),
+                    value.0,
+                    value.1,
+                );
+
+                Some(result)
             }
             None => None,
         }
@@ -121,10 +68,10 @@ pub fn name_is_beatiful_test() {
         ],
     );
 
-    for (validator, (name, expected)) in &table {
+    for (mut validator, name, expected) in table {
         let actual = name_is_beatiful(name);
 
-        validator.assert_eq(&expected, &actual, "allo");
+        validator.assert_eq(&expected, &actual);
     }
 }
 #[cfg(test)]
