@@ -28,7 +28,11 @@ impl<I, E> Drop for Table<I, E> {
     fn drop(&mut self) {
         let failed = *self.failed.lock().unwrap();
         if failed > 0 {
-            println!("{} passed {} failed\n", self.number_of_tests - failed, failed);
+            println!(
+                "{} passed {} failed\n",
+                self.number_of_tests - failed,
+                failed
+            );
             panic!("Test Failed");
         }
     }
