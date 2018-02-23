@@ -28,7 +28,7 @@ impl<I, E> Drop for Table<I, E> {
     fn drop(&mut self) {
         let failed = *self.failed.lock().unwrap();
         if failed > 0 {
-            println!("{} passed {} failed", self.number_of_tests - failed, failed);
+            println!("{} passed {} failed\n", self.number_of_tests - failed, failed);
             panic!("Test Failed");
         }
     }
@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[test]
-    pub fn given_wonderfull_names_when_validate_is_beautiful_then_table_dont_panic() {
+    pub fn given_wonderful_names_when_validate_is_beautiful_then_table_dont_panic() {
         let table = new(
             "name is beatiful",
             vec![("a beautiful name", true), ("an amazing name", true)],
