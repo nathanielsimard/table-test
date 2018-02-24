@@ -1,4 +1,5 @@
 # Table Test
+[![Build Status](https://travis-ci.org/nathanielsimard/table-test.svg?branch=master)](https://travis-ci.org/nathanielsimard/table-test)
 
 This library aims to make table testing reliable in `Rust`. 
 The problem is `assert_eq!` calling `panic!` when it fails making all the other cases untested.
@@ -41,5 +42,9 @@ fn test_add() {
     }
 }
 ```
+
+## Examples
+
+Output for example [change name](examples/change_name.rs):
 
 ![change name](examples/change_name.png)
