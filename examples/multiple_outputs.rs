@@ -16,16 +16,19 @@ fn main() {
 
         let name = actuals.next();
         validator
+            .clone()
             .when("split name")
             .assert_eq(Some(expected_1), name);
 
         let surname = actuals.next();
         validator
+            .clone()
             .when("split surname")
             .assert_eq(Some(expected_2), surname);
 
         let none = actuals.next();
         validator
+            .clone()
             .when("there is no more split")
             .assert_eq(None, none);
     }

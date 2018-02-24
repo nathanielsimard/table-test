@@ -6,43 +6,86 @@ use formater;
 #[derive(Clone)]
 pub struct Validator {
     inputs: String,
-    name: String,
+    given: String,
+    when: String,
+    then: Option<String>,
     nb_failed: Rc<RefCell<usize>>,
 }
 
 impl Validator {
     pub fn new(name: String, inputs: String, failed: Rc<RefCell<usize>>) -> Validator {
         Validator {
-            name: name,
-            inputs: inputs,
+            inputs: inputs.clone(),
+            when: name,
+            given: inputs,
             nb_failed: failed,
+            then: None,
         }
     }
 
-    pub fn when(&self, when: &str) -> Validator {
-        let mut copy = self.clone();
-        copy.name = when.to_string();
-        copy
+    pub fn given(mut self, given: &str) -> Validator {
+        self.given = given.to_string();
+        self
     }
 
-    pub fn assert_eq<T: PartialEq + Debug>(&self, expected: T, actual: T) {
+    pub fn when(mut self, when: &str) -> Validator {
+        self.when = when.to_string();
+        self
+    }
+
+    pub fn then(mut self, then: &str) -> Validator {
+        self.then = Some(then.to_string());
+        self
+    }
+
+    pub fn assert_eq<T: PartialEq + Debug>(self, expected: T, actual: T) {
         if expected != actual {
             self.increment_failed_counter();
-            let output = formater::format_failed_test(
-                &self.inputs,
-                &self.name,
-                &String::from(format!("{:?}", expected)),
-                &String::from(format!("{:?}", actual)),
-            );
-
-            print!("\n{}", output);
+            match self.then {
+                Some(then) => {
+                    print!(
+                        "\n{}",
+                        formater::format_failed_test(
+                            &self.given,
+                            &self.when,
+                            &then,
+                            &String::from(format!("{:?}", expected)),
+                            &String::from(format!("{:?}", actual)),
+                        )
+                    );
+                }
+                None => {
+                    print!(
+                        "\n{}",
+                        formater::format_failed_test(
+                            &self.given,
+                            &self.when,
+                            &String::from(format!("{:?}", expected)),
+                            &String::from(format!("{:?}", expected)),
+                            &String::from(format!("{:?}", actual)),
+                        )
+                    );
+                }
+            }
         } else {
-            let output = formater::format_passed_test(
-                &self.inputs,
-                &self.name,
-                &String::from(format!("{:?}", expected)),
-            );
-            print!("\n{}", output);
+            match self.then {
+                Some(then) => {
+                    print!(
+                        "\n{}",
+                        formater::format_passed_test(&self.given, &self.when, &then,)
+                    );
+                }
+                None => {
+                    print!(
+                        "\n{}",
+                        formater::format_passed_test(
+                            &self.given,
+                            &self.when,
+                            &String::from(format!("{:?}", expected)),
+                        )
+                    );
+                }
+            }
         }
     }
 
