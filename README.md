@@ -39,7 +39,7 @@ fn test_add() {
     for (validator, (input_1, input_2), expected) in table {
         let actual = add(input_1, input_2);
 
-        validator.assert_eq(actual, expected);
+        validator.assert_eq(expected, actual);
     }
 }
 ```
