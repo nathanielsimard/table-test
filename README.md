@@ -41,3 +41,5 @@ fn test_add() {
     }
 }
 ```
+
+![change name](examples/change_name.png)
