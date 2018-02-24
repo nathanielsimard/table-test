@@ -15,5 +15,9 @@ fi
 
 cargo run --example change_name | ./aha/aha > examples/change_name.html
 ./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 examples/change_name.html examples/change_name.png
-
 rm examples/change_name.html
+
+cargo run --example add | ./aha/aha > examples/add.html
+./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 examples/add.html examples/add.png
+rm examples/add.html
+

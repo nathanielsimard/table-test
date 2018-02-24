@@ -26,17 +26,18 @@ If you have more than one input, just use a tuple of inputs.
 #[test]
 fn test_add() {
     let table = table_test!(
-        "add",
-        [
-            ((1, 2, 0), 3),
-            ((1, 5, 1), 7),
-            ((0, 0, 0), 0),
-            ((0, 1, -6), -5)
+        add,
+        vec![
+            ((1, 2), 3),
+            ((2, 5), 7),
+            ((0, 0), 0),
+            ((0, 1), 1),
+            ((2, 2), 4),
         ]
     );
 
-    for (validator, (input_1, input_2, input_3), expected) in table {
-        let actual = add(input_1, input_2, input_3);
+    for (validator, (input_1, input_2), expected) in table {
+        let actual = add(input_1, input_2);
 
         validator.assert_eq(actual, expected);
     }
@@ -48,3 +49,7 @@ fn test_add() {
 Output for example [change name](examples/change_name.rs):
 
 ![change name](examples/change_name.png)
+
+Output for example [add](examples/add.rs):
+
+![add](examples/add.png)
