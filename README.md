@@ -46,10 +46,10 @@ fn test_add() {
 
 ## Examples
 
-Output for example [change name](examples/change_name.rs):
+Output for example [mutable struct](examples/mutable_struct.rs):
 
-![change name](examples/change_name.png)
+![mutable struct](assets/mutable_struct.png)
 
-Output for example [add](examples/add.rs):
+Output for example [multiple inputs](examples/multiple_inputs.rs):
 
-![add](examples/add.png)
+![multiple inputs](assets/multiple_inputs.png)

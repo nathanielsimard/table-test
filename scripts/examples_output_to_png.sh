@@ -13,11 +13,15 @@ if [ ! -d wkhtmltox ]; then
 	rm -rf wkhtmltox-0.12.4_linux-generic-amd64.tar.xz 
 fi
 
-cargo run --example change_name | ./aha/aha > examples/change_name.html
-./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 examples/change_name.html examples/change_name.png
-rm examples/change_name.html
+cargo run --example mutable_struct | ./aha/aha > examples/mutable_struct.html
+./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 examples/mutable_struct.html assets/mutable_struct.png
+rm examples/mutable_struct.html
 
-cargo run --example add | ./aha/aha > examples/add.html
-./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 examples/add.html examples/add.png
-rm examples/add.html
+cargo run --example multiple_inputs | ./aha/aha > examples/multiple_inputs.html
+./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 examples/multiple_inputs.html assets/multiple_inputs.png
+rm examples/multiple_inputs.html
+
+cargo run --example multiple_outputs | ./aha/aha > examples/multiple_outputs.html
+./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 examples/multiple_outputs.html assets/multiple_outputs.png
+rm examples/multiple_outputs.html
 

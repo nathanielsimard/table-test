@@ -3,6 +3,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use formater;
 
+#[derive(Clone)]
 pub struct Validator {
     inputs: String,
     name: String,
@@ -17,6 +18,13 @@ impl Validator {
             nb_failed: failed,
         }
     }
+
+    pub fn when(&self, when: &str) -> Validator {
+        let mut copy = self.clone();
+        copy.name = when.to_string();
+        copy
+    }
+
     pub fn assert_eq<T: PartialEq + Debug>(&self, expected: T, actual: T) {
         if expected != actual {
             self.increment_failed_counter();
