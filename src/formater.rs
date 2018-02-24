@@ -52,13 +52,13 @@ fn diff(expected: &String, actual: &String) -> String {
             Difference::Rem(ref rem) => {
                 expected.push_str(&format!(
                     "{}",
-                    Style::new().on(Green).fg(White).paint(format!("{}", rem))
+                    Style::new().on(Green).paint(format!("{}", rem))
                 ));
             }
             Difference::Add(ref add) => {
                 actual.push_str(&format!(
                     "{}",
-                    Style::new().on(Red).fg(White).paint(format!("{}", add))
+                    Style::new().on(Red).paint(format!("{}", add))
                 ));
             }
         }

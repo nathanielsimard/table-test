@@ -13,7 +13,7 @@ if [ ! -d wkhtmltox ]; then
 	rm -rf wkhtmltox-0.12.4_linux-generic-amd64.tar.xz 
 fi
 
-cargo run --example change_name | ./aha/aha --black > examples/change_name.html
-./wkhtmltox/bin/wkhtmltoimage examples/change_name.html examples/change_name.png
+cargo run --example change_name | ./aha/aha > examples/change_name.html
+./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 examples/change_name.html examples/change_name.png
 
 rm examples/change_name.html
