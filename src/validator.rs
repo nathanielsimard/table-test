@@ -8,84 +8,96 @@ pub struct Validator {
     inputs: String,
     given: String,
     when: String,
-    then: Option<String>,
+    then: String,
     nb_failed: Rc<RefCell<usize>>,
 }
 
-impl Validator {
-    pub fn new(name: String, inputs: String, failed: Rc<RefCell<usize>>) -> Validator {
-        Validator {
-            inputs: inputs.clone(),
-            when: name,
-            given: inputs,
-            nb_failed: failed,
-            then: None,
+#[derive(Clone)]
+pub struct Given {
+    inputs: String,
+    failed: Rc<RefCell<usize>>,
+    value: String,
+}
+
+pub struct When {
+    given: Given,
+    value: String,
+}
+
+pub struct Then {
+    when: When,
+}
+
+impl Given {
+    pub fn new(inputs: String, failed: Rc<RefCell<usize>>) -> Given {
+        Given {
+            inputs: inputs,
+            failed: failed,
+            value: String::new(),
         }
     }
-
-    pub fn given(mut self, given: &str) -> Validator {
-        self.given = given.to_string();
-        self
+    pub fn given(mut self, given: &str) -> When {
+        self.value = given.to_string();
+        When {
+            given: self,
+            value: String::new(),
+        }
     }
+}
 
-    pub fn when(mut self, when: &str) -> Validator {
-        self.when = when.to_string();
-        self
+impl When {
+    pub fn when(mut self, when: &str) -> Then {
+        self.value = when.to_string();
+        Then { when: self }
     }
+}
 
-    pub fn then(mut self, then: &str) -> Validator {
-        self.then = Some(then.to_string());
-        self
+impl Then {
+    pub fn then(self, then: &str) -> Validator {
+        Validator::new(
+            self.when.given.value,
+            self.when.value,
+            then.to_string(),
+            self.when.given.inputs,
+            self.when.given.failed,
+        )
+    }
+}
+impl Validator {
+    pub fn new(
+        given: String,
+        when: String,
+        then: String,
+        inputs: String,
+        failed: Rc<RefCell<usize>>,
+    ) -> Validator {
+        Validator {
+            inputs: inputs.clone(),
+            given: given,
+            when: when,
+            then: then,
+            nb_failed: failed,
+        }
     }
 
     pub fn assert_eq<T: PartialEq + Debug>(self, expected: T, actual: T) {
         if expected != actual {
             self.increment_failed_counter();
-            match self.then {
-                Some(then) => {
-                    print!(
-                        "\n{}",
-                        formater::format_failed_test(
-                            &self.given,
-                            &self.when,
-                            &then,
-                            &String::from(format!("{:?}", expected)),
-                            &String::from(format!("{:?}", actual)),
-                        )
-                    );
-                }
-                None => {
-                    print!(
-                        "\n{}",
-                        formater::format_failed_test(
-                            &self.given,
-                            &self.when,
-                            &String::from(format!("{:?}", expected)),
-                            &String::from(format!("{:?}", expected)),
-                            &String::from(format!("{:?}", actual)),
-                        )
-                    );
-                }
-            }
+            print!(
+                "\n{}",
+                formater::format_failed_test(
+                    &self.given,
+                    &self.when,
+                    &self.then,
+                    &String::from(format!("{:?}", expected)),
+                    &String::from(format!("{:?}", actual)),
+                )
+            );
         } else {
-            match self.then {
-                Some(then) => {
-                    print!(
-                        "\n{}",
-                        formater::format_passed_test(&self.given, &self.when, &then,)
-                    );
-                }
-                None => {
-                    print!(
-                        "\n{}",
-                        formater::format_passed_test(
-                            &self.given,
-                            &self.when,
-                            &String::from(format!("{:?}", expected)),
-                        )
-                    );
-                }
-            }
+            print!(
+                "\n{}",
+                formater::format_passed_test(&self.given, &self.when, &self.then)
+            );
         }
     }
 
