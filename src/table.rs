@@ -29,7 +29,9 @@ impl<I, E> Drop for Table<I, E> {
         let nb_failed = *self.nb_failed.borrow_mut();
         if nb_failed > 0 {
             println!("\n--------------------");
-            let nb_passed = Green.bold().paint(format!("{}", self.number_of_tests - nb_failed));
+            let nb_passed = Green
+                .bold()
+                .paint(format!("{}", self.number_of_tests - nb_failed));
             let nb_failed = Red.bold().paint(format!("{}", nb_failed));
             println!("{} Passed {} Failed\n", nb_passed, nb_failed);
             panic!("Test Failed");

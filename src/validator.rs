@@ -23,8 +23,8 @@ impl Validator {
             let output = formater::format_failed_test(
                 &self.inputs,
                 &self.name,
-                &String::from(format!("{:?}", actual)),
                 &String::from(format!("{:?}", expected)),
+                &String::from(format!("{:?}", actual)),
             );
 
             print!("\n{}", output);
