@@ -41,8 +41,8 @@ fn main() {
 
         validator
             .given("a person")
-            .when("change name")
-            .then("name should be updated")
+            .when(&format!("{}{}", "change name to ", new_name))
+            .then(&format!("{}{}", "new name is ", expected.name))
             .assert_eq(expected, person);
     }
 }
