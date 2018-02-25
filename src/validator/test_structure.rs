@@ -1,6 +1,7 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 use validator::asserter::Asserter;
+use formater;
 
 #[derive(Clone)]
 pub struct Given {
@@ -51,6 +52,7 @@ impl Then {
             self.when.value,
             then.to_string(),
             self.when.given.failed,
+            formater::new(),
         )
     }
 }
