@@ -19,7 +19,7 @@ fn main() {
         validator
             .given(&format!("{}, {}", input_1, input_2))
             .when("add")
-            .then(&format!("should be {}", expected))
+            .then(&format!("it should be {}", expected))
             .assert_eq(expected, actual);
     }
 }
