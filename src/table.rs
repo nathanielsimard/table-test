@@ -3,7 +3,7 @@ use std::vec::IntoIter;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::fmt::Debug;
-use validator::Given;
+use validator::Validator;
 use ansi_term::Colour::*;
 
 pub struct Table<I, E> {
@@ -38,18 +38,13 @@ impl<I, E> Drop for Table<I, E> {
 }
 
 impl<I: Debug, E: Debug> Iterator for Table<I, E> {
-    type Item = (Given, I, E);
+    type Item = (Validator, I, E);
     fn next(&mut self) -> Option<Self::Item> {
         let items = self.values.next();
 
         match items {
             Some(value) => {
-                let inputs = format!("{:?}", value.0);
-                let result = (
-                    Given::new(inputs, Rc::clone(&self.nb_failed)),
-                    value.0,
-                    value.1,
-                );
+                let result = (Validator::new(Rc::clone(&self.nb_failed)), value.0, value.1);
 
                 Some(result)
             }
