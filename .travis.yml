@@ -1,7 +1,17 @@
 sudo: required
+
 language: rust
+
 rust:
   - stable
 
+service:
+  - docker
+
 script:
   - cargo test
+
+after_success: |
+  ./scripts/coverage.sh
+  bash <(curl -s https://codecov.io/bash) &&
+  echo "Uploaded code coverage"
