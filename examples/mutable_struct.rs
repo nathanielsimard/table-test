@@ -21,27 +21,28 @@ impl Person {
 }
 
 fn main() {
-    let table = table_test!(
-        change_name,
-        vec![
-            (
-                (Person::new("John", "Smith"), "Johny"),
-                Person::new("Johny", "Smith"),
-            ),
-            (
-                (Person::new("Ian", "Taylor"), "Yan"),
-                Person::new("Yan", "Taylor"),
-            ),
-            (
-                (Person::new("Justin", "Williams"), "Justine"),
-                Person::new("Justine", "Williams"),
-            ),
-        ]
-    );
+    let table = vec![
+        (
+            (Person::new("John", "Smith"), "Johny"),
+            Person::new("Johny", "Smith"),
+        ),
+        (
+            (Person::new("Ian", "Taylor"), "Yan"),
+            Person::new("Yan", "Taylor"),
+        ),
+        (
+            (Person::new("Justin", "Williams"), "Justine"),
+            Person::new("Justine", "Williams"),
+        ),
+    ];
 
-    for (validator, (mut person, new_name), expected) in table {
+    for (validator, (mut person, new_name), expected) in table_test!(table) {
         person.change_name(new_name);
 
-        validator.assert_eq(expected, person);
+        validator
+            .given("a person")
+            .when("change name")
+            .then("name should be updated")
+            .assert_eq(expected, person);
     }
 }
