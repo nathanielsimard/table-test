@@ -62,6 +62,92 @@ impl Asserter {
 
 #[cfg(test)]
 mod test {
+    use super::*;
+    use formater::mock::Mock;
+
     #[test]
-    fn test_assert_eq() {}
+    fn test_assert_eq() {
+        let table = vec![
+            ("something", "something else", 1, true, false),
+            ("something", "something", 0, false, true),
+        ];
+
+        for (val_1, val_2, nb_failed, format_failed_called, format_passed_called) in table {
+            let formater = Mock::new();
+            let failed = Rc::new(RefCell::new(0));
+
+            let given = String::from("given");
+            let when = String::from("when");
+            let then = String::from("then");
+
+            let asserter = Asserter::new(
+                given.clone(),
+                when.clone(),
+                then.clone(),
+                failed.clone(),
+                Box::new(formater.clone()),
+            );
+
+            asserter.assert_eq(val_1, val_2);
+
+            assert_eq!(
+                format_failed_called,
+                formater.format_failed_test_called_with(
+                    &given,
+                    &when,
+                    &then,
+                    &format!("{:?}", val_1),
+                    &format!("{:?}", val_2),
+                )
+            );
+            assert_eq!(
+                format_passed_called,
+                formater.format_passed_test_called_with(&given, &when, &then)
+            );
+            assert_eq!(nb_failed, *failed.borrow());
+        }
+    }
+
+    #[test]
+    fn test_assert_ne() {
+        let table = vec![
+            ("something", "something else", 0, false, true),
+            ("something", "something", 1, true, false),
+        ];
+
+        for (val_1, val_2, nb_failed, format_failed_called, format_passed_called) in table {
+            let formater = Mock::new();
+            let failed = Rc::new(RefCell::new(0));
+
+            let given = String::from("given");
+            let when = String::from("when");
+            let then = String::from("then");
+
+            let asserter = Asserter::new(
+                given.clone(),
+                when.clone(),
+                then.clone(),
+                failed.clone(),
+                Box::new(formater.clone()),
+            );
+
+            asserter.assert_ne(val_1, val_2);
+
+            assert_eq!(
+                format_failed_called,
+                formater.format_failed_test_called_with(
+                    &given,
+                    &when,
+                    &then,
+                    &format!("{:?}", val_2),
+                    &format!("{:?}", val_1),
+                )
+            );
+            assert_eq!(
+                format_passed_called,
+                formater.format_passed_test_called_with(&given, &when, &then)
+            );
+            assert_eq!(nb_failed, *failed.borrow());
+        }
+    }
 }

@@ -1,4 +1,5 @@
-pub mod formater;
+pub mod colorful_formater;
+use self::colorful_formater::ColorfulFormater;
 
 pub trait Formater {
     fn format_passed_test(&self, inputs: &String, test_name: &String, expected: &String) -> String;
@@ -13,5 +14,8 @@ pub trait Formater {
 }
 
 pub fn new() -> Box<Formater> {
-    Box::new(formater::ColorfulFormater::new())
+    Box::new(ColorfulFormater::new())
 }
+
+#[cfg(test)]
+pub mod mock;
