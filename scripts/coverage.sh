@@ -1,5 +1,6 @@
 #!/bin/bash
 
-current_path=$(pwd)
+mkdir -p target/cov
+current_path=$(pwd)/target/cov
 docker build -t table-test .
-docker run -v $current_path:/opt/table-test/target table-test:latest
+docker run -v $current_path:/opt/table-test/target/cov table-test:latest
