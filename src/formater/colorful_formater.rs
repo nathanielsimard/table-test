@@ -26,14 +26,14 @@ impl Formater for ColorfulFormater {
         return String::from(format!("{}{}{}", status, given_when_then, actual));
     }
 
-    fn format_passed_test(&self, inputs: &String, test_name: &String, expected: &String) -> String {
+    fn format_passed_test(&self, given: &String, when: &String, then: &String) -> String {
         let status = format!(
             "{}{}{}\n",
             "[",
             Green.bold().paint(String::from("Passed")),
             "]"
         );
-        let given_when_then = format_core(inputs, test_name, expected);
+        let given_when_then = format_core(given, when, then);
         return String::from(format!("{}{}", status, given_when_then));
     }
 }
@@ -44,11 +44,12 @@ impl ColorfulFormater {
     }
 }
 
-fn format_core(inputs: &String, test_name: &String, expected: &String) -> String {
-    let given = format!("{}{}\n", Cyan.paint("Given "), inputs);
-    let when = format!("{}{}\n", Cyan.paint("When "), test_name);
-    let it_should = format!("{}{}\n", Cyan.paint("Then "), expected);
-    return String::from(format!("{}{}{}", given, when, it_should));
+fn format_core(given: &String, when: &String, then: &String) -> String {
+    let given = format!("{}{}\n", Cyan.paint("Given "), given);
+    let when = format!("{}{}\n", Cyan.paint("When "), when);
+    let then = format!("{}{}\n", Cyan.paint("Then "), then);
+
+    return String::from(format!("{}{}{}", given, when, then));
 }
 
 fn diff(expected: &String, actual: &String) -> String {

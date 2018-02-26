@@ -4,3 +4,4 @@ Cargo.lock
 
 aha/
 wkhtmltox/
+.cargo

@@ -10,9 +10,9 @@ pub struct Mock {
 
 #[derive(PartialEq, Debug)]
 struct FormatPassedTestInputs {
-    inputs: String,
-    test_name: String,
-    expected: String,
+    given: String,
+    when: String,
+    then: String,
 }
 
 #[derive(PartialEq, Debug)]
@@ -26,9 +26,9 @@ struct FormatFailedTestInputs {
 
 fn new_empty_passed_inputs() -> FormatPassedTestInputs {
     FormatPassedTestInputs {
-        inputs: String::from(""),
-        test_name: String::from(""),
-        expected: String::from(""),
+        given: String::from(""),
+        when: String::from(""),
+        then: String::from(""),
     }
 }
 
@@ -43,11 +43,11 @@ fn new_empty_failed_inputs() -> FormatFailedTestInputs {
 }
 
 impl Formater for Mock {
-    fn format_passed_test(&self, inputs: &String, test_name: &String, expected: &String) -> String {
+    fn format_passed_test(&self, given: &String, when: &String, then: &String) -> String {
         *self.format_passed_test_called.borrow_mut() = FormatPassedTestInputs {
-            inputs: inputs.clone(),
-            test_name: test_name.clone(),
-            expected: expected.clone(),
+            given: given.clone(),
+            when: when.clone(),
+            then: then.clone(),
         };
         String::new()
     }
@@ -79,18 +79,16 @@ impl Mock {
     }
     pub fn format_passed_test_called_with(
         &self,
-        inputs: &String,
-        test_name: &String,
-        expected: &String,
+        given: &String,
+        when: &String,
+        then: &String,
     ) -> bool {
         let format_inputs = self.format_passed_test_called.borrow_mut();
         let format = FormatPassedTestInputs {
-            inputs: inputs.clone(),
-            test_name: test_name.clone(),
-            expected: expected.clone(),
+            given: given.clone(),
+            when: when.clone(),
+            then: then.clone(),
         };
-        println!("\nActual {:?}", *format_inputs);
-        println!("\nExpected {:?}", format);
         *format_inputs == format
     }
 
@@ -110,8 +108,6 @@ impl Mock {
             expected: expected.clone(),
             actual: actual.clone(),
         };
-        println!("\nActual {:?}", *format_inputs);
-        println!("\nExpected {:?}", format);
         *format_inputs == format
     }
 }

@@ -13,7 +13,7 @@ pub trait Formater {
     ) -> String;
 }
 
-pub fn new() -> Box<Formater> {
+pub fn new_colorful() -> Box<Formater> {
     Box::new(ColorfulFormater::new())
 }
 

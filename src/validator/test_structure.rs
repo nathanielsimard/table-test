@@ -52,7 +52,7 @@ impl Then {
             self.when.value,
             then.to_string(),
             self.when.given.failed,
-            formater::new(),
+            formater::new_colorful(),
         )
     }
 }
