@@ -40,17 +40,14 @@ impl<I, E> Drop for Table<I, E> {
 impl<I: Debug, E: Debug> Iterator for Table<I, E> {
     type Item = (Validator, I, E);
     fn next(&mut self) -> Option<Self::Item> {
-        let value = self.values.next();
-        match value {
-            Some(value) => {
-                let result = (
-                    Validator::new(Rc::clone(&self.nb_test_failed)),
-                    value.0,
-                    value.1,
-                );
-                Some(result)
-            }
-            None => None,
+        if let Some(value) = self.values.next() {
+            Some((
+                Validator::new(Rc::clone(&self.nb_test_failed)),
+                value.0,
+                value.1,
+            ))
+        } else {
+            None
         }
     }
 }
