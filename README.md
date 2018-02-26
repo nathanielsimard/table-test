@@ -1,5 +1,6 @@
 # Table Test
 [![Build Status](https://travis-ci.org/nathanielsimard/table-test.svg?branch=master)](https://travis-ci.org/nathanielsimard/table-test)
+[![codecov.io](https://codecov.io/gh/nathanielsimard/table-test/coverage.svg?branch=master)](https://codecov.io/gh/nathanielsimard/table-test)
 
 This library aims to make table testing reliable in Rust. 
 The main problem of table testing with basic Rust is `assert_eq!` calling `panic!`.

@@ -1,6 +1,4 @@
 #!/bin/bash
 
 mkdir -p target/cov
-current_path=$(pwd)/target/cov
-docker build -t table-test .
-docker run -v $current_path:/opt/table-test/target/cov table-test:latest
+docker run -it --rm --security-opt seccomp=unconfined --volume "$(pwd):/volume" elmtai/docker-rust-kcov
