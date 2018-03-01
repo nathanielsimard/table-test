@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OUT_DIR='assets'
-declare -a examples=("mutable_struct" "multiple_inputs" "multiple_outputs")
+declare -a examples=("mutable_struct" "multiple_inputs")
 
 if [ ! -d aha ]; then
 	git clone https://github.com/theZiz/aha
@@ -19,6 +19,6 @@ fi
 for example in "${examples[@]}"
 do
 	cargo run --example $example | ./aha/aha > tmp.html
-	./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 tmp.html "assets/"$example".png"
+	./wkhtmltox/bin/wkhtmltoimage --user-style-sheet scripts/style.css --zoom 1.3 --quality 85 tmp.html "assets/"$example".png"
 	rm tmp.html
 done
