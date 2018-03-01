@@ -1,6 +1,7 @@
 # Table Test
 [![Build Status](https://travis-ci.org/nathanielsimard/table-test.svg?branch=master)](https://travis-ci.org/nathanielsimard/table-test)
 [![codecov.io](https://codecov.io/gh/nathanielsimard/table-test/coverage.svg?branch=master)](https://codecov.io/gh/nathanielsimard/table-test)
+[![Current Crates.io Version](https://img.shields.io/crates/v/table-test.svg)](https://crates.io/crates/table-test)
 
 This library aims to make table testing reliable in Rust. 
 The main problem of table testing with basic Rust is `assert_eq!` calling `panic!`.
@@ -13,7 +14,7 @@ Specify this crate as `[dev-dependencies]`.
 
 ```toml
 [dev-dependencies]
-table_test = "*"
+table_test = "0.1.1"
 ```
 
 ```rust
