@@ -2,7 +2,6 @@ use std::iter::Iterator;
 use std::vec::IntoIter;
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::fmt::Debug;
 use validator::Validator;
 use ansi_term::Colour::*;
 
@@ -37,7 +36,7 @@ impl<I, E> Drop for Table<I, E> {
     }
 }
 
-impl<I: Debug, E: Debug> Iterator for Table<I, E> {
+impl<I, E> Iterator for Table<I, E> {
     type Item = (Validator, I, E);
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(value) = self.values.next() {
