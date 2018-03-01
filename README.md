@@ -53,10 +53,10 @@ fn test_add() {
 ```
 If we make a mistake in the implementation of the `add` function and multiplying instead, then the output will look like this:
 
-![multiple inputs](assets/multiple_inputs.png)
+![multiple inputs](https://github.com/nathanielsimard/table-test/blob/master/assets/multiple_inputs.png)
 
 As we can see, it would be easier to debug than with a normal `assert_eq!` output.
 But the gain is when we work with something more complex.
 The example [here](examples/mutable_struct.rs) test the changing name method and the result looks like this:
 
-![mutable struct](assets/mutable_struct.png)
+![mutable struct](https://github.com/nathanielsimard/table-test/blob/master/assets/mutable_struct.png)

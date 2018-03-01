@@ -8,6 +8,7 @@ license = "MIT"
 readme="README.md"
 exclude = [
     "scripts/*",
+    "assets/*"
 ]
 
 [dependencies]
