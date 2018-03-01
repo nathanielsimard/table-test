@@ -1,7 +1,10 @@
 [package]
 name = "table-test"
 version = "0.1.0"
-authors = ["nathaniel <nathaniel.simard.1@ulaval.ca>"]
+authors = ["nathaniel <nathaniel.simard@outlook.com>"]
+description = "Improve table testing in Rust"
+repository = "https://github.com/nathanielsimard/table-test"
+license = "MIT"
 
 [dependencies]
 ansi_term = "0.9"
