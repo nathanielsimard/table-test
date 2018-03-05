@@ -3,26 +3,25 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use formater::Formater;
 
+pub struct Precision {
+    pub tag: String,
+    pub comment: String,
+}
+
 pub struct Asserter {
-    given: String,
-    when: String,
-    then: String,
+    precisions: Vec<Precision>,
     nb_failed: Rc<RefCell<usize>>,
     formater: Box<Formater>,
 }
 
 impl Asserter {
     pub fn new(
-        given: String,
-        when: String,
-        then: String,
+        precisions: Vec<Precision>,
         failed: Rc<RefCell<usize>>,
         formater: Box<Formater>,
     ) -> Asserter {
         Asserter {
-            given: given,
-            when: when,
-            then: then,
+            precisions: precisions,
             nb_failed: failed,
             formater: formater,
         }
@@ -41,16 +40,27 @@ impl Asserter {
     fn format_test<T: PartialEq + Debug>(&self, passed: bool, expected: T, actual: T) -> String {
         if !passed {
             self.increment_failed_counter();
-            self.formater.format_failed_test(
-                &self.given,
-                &self.when,
-                &self.then,
-                &String::from(format!("{:?}", expected)),
-                &String::from(format!("{:?}", actual)),
-            )
+            let mut output = self.formater.format_failed_test_header();
+
+            for precision in &self.precisions {
+                let line = self.formater
+                    .format_one_line(&precision.tag, &precision.comment);
+                output.push_str(&line);
+            }
+            output.push_str(&self.formater
+                .format_diff(&format!("{:?}", expected), &format!("{:?}", actual)));
+
+            output
         } else {
-            self.formater
-                .format_passed_test(&self.given, &self.when, &self.then)
+            let mut output = self.formater.format_passed_test_header();
+
+            for precision in &self.precisions {
+                let line = self.formater
+                    .format_one_line(&precision.tag, &precision.comment);
+                output.push_str(&line);
+            }
+
+            output
         }
     }
 
@@ -76,33 +86,26 @@ mod test {
             let formater = Mock::new();
             let failed = Rc::new(RefCell::new(0));
 
-            let given = String::from("given");
-            let when = String::from("when");
-            let then = String::from("then");
+            let precisions = vec![
+                Precision {
+                    tag: "A Tag".to_string(),
+                    comment: "A comment".to_string(),
+                },
+            ];
 
-            let asserter = Asserter::new(
-                given.clone(),
-                when.clone(),
-                then.clone(),
-                failed.clone(),
-                Box::new(formater.clone()),
-            );
+            let asserter = Asserter::new(precisions, failed.clone(), Box::new(formater.clone()));
 
             asserter.assert_eq(val_1, val_2);
 
+            assert_eq!(format_failed_called, formater.format_failed_test_called());
             assert_eq!(
                 format_failed_called,
-                formater.format_failed_test_called_with(
-                    &given,
-                    &when,
-                    &then,
-                    &format!("{:?}", val_1),
-                    &format!("{:?}", val_2),
-                )
+                formater.format_diff_called_with(&format!("{:?}", val_1), &format!("{:?}", val_2))
             );
-            assert_eq!(
-                format_passed_called,
-                formater.format_passed_test_called_with(&given, &when, &then)
+            assert_eq!(format_passed_called, formater.format_passed_test_called());
+            assert!(
+                formater
+                    .format_one_line_called_with(&"A Tag".to_string(), &"A comment".to_string())
             );
             assert_eq!(nb_failed, *failed.borrow());
         }
@@ -119,33 +122,26 @@ mod test {
             let formater = Mock::new();
             let failed = Rc::new(RefCell::new(0));
 
-            let given = String::from("given");
-            let when = String::from("when");
-            let then = String::from("then");
+            let precisions = vec![
+                Precision {
+                    tag: "A Tag".to_string(),
+                    comment: "A comment".to_string(),
+                },
+            ];
 
-            let asserter = Asserter::new(
-                given.clone(),
-                when.clone(),
-                then.clone(),
-                failed.clone(),
-                Box::new(formater.clone()),
-            );
+            let asserter = Asserter::new(precisions, failed.clone(), Box::new(formater.clone()));
 
             asserter.assert_ne(val_1, val_2);
 
+            assert_eq!(format_failed_called, formater.format_failed_test_called());
             assert_eq!(
                 format_failed_called,
-                formater.format_failed_test_called_with(
-                    &given,
-                    &when,
-                    &then,
-                    &format!("{:?}", val_2),
-                    &format!("{:?}", val_1),
-                )
+                formater.format_diff_called_with(&format!("{:?}", val_2), &format!("{:?}", val_1))
             );
-            assert_eq!(
-                format_passed_called,
-                formater.format_passed_test_called_with(&given, &when, &then)
+            assert_eq!(format_passed_called, formater.format_passed_test_called());
+            assert!(
+                formater
+                    .format_one_line_called_with(&"A Tag".to_string(), &"A comment".to_string())
             );
             assert_eq!(nb_failed, *failed.borrow());
         }

@@ -2,6 +2,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use validator::asserter::Asserter;
 use formater;
+use validator::asserter::Precision;
 
 #[derive(Clone)]
 pub struct Given {
@@ -47,10 +48,25 @@ impl Then {
     }
 
     pub fn then(self, then: &str) -> Asserter {
+        let mut precisions = vec![];
+
+        precisions.push(Precision{
+            tag: "Given".to_string(),
+            comment: self.when.given.value,
+        });
+
+        precisions.push(Precision{
+            tag: "When".to_string(),
+            comment: self.when.value,
+        });
+
+        precisions.push(Precision{
+            tag: "Then".to_string(),
+            comment: then.to_string(),
+        });
+
         Asserter::new(
-            self.when.given.value,
-            self.when.value,
-            then.to_string(),
+            precisions,
             self.when.given.failed,
             formater::new_colorful(),
         )
