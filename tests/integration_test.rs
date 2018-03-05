@@ -22,9 +22,9 @@ fn given_correct_add_function_when_use_table_test_then_no_panic() {
         let actual = correct_add(input_1, input_2, input_3);
 
         validator
-            .given("")
-            .when("")
-            .then("")
+            .given(&format!("{}, {}, {}", input_1, input_2, input_3))
+            .when("add")
+            .then(&format!("it returns {}", expected))
             .assert_eq(actual, expected);
     }
 }
@@ -43,9 +43,9 @@ fn given_incorrect_add_function_when_use_table_test_then_panic() {
         let actual = incorrect_add(input_1, input_2, input_3);
 
         validator
-            .given("")
-            .when("")
-            .then("")
+            .given(&format!("{}, {}, {}", input_1, input_2, input_3))
+            .when("add")
+            .then(&format!("it returns {}", expected))
             .assert_eq(actual, expected);
     }
 }

@@ -4,10 +4,11 @@ use std::rc::Rc;
 
 #[derive(Clone)]
 pub struct Mock {
-    format_one_line_called: Rc<RefCell<FormatOneLineInputs>>,
+    format_one_line_called: Rc<RefCell<Vec<FormatOneLineInputs>>>,
     format_diff_called: Rc<RefCell<FormatDiffInputs>>,
     format_passed_test_called: Rc<RefCell<bool>>,
     format_failed_test_called: Rc<RefCell<bool>>,
+    pub format_one_line_return: String,
 }
 
 #[derive(PartialEq, Debug)]
@@ -22,13 +23,6 @@ struct FormatDiffInputs {
     actual: String,
 }
 
-fn new_empty_format_one_line_inputs() -> FormatOneLineInputs {
-    FormatOneLineInputs {
-        tag: String::from(""),
-        comment: String::from(""),
-    }
-}
-
 fn new_empty_format_diff_inputs() -> FormatDiffInputs {
     FormatDiffInputs {
         expected: String::from(""),
@@ -38,11 +32,13 @@ fn new_empty_format_diff_inputs() -> FormatDiffInputs {
 
 impl Formater for Mock {
     fn format_one_line(&self, tag: &String, comment: &String) -> String {
-        *self.format_one_line_called.borrow_mut() = FormatOneLineInputs {
+        let mut one_lines = self.format_one_line_called.borrow_mut();
+        let new_entry = FormatOneLineInputs {
             tag: tag.clone(),
             comment: comment.clone(),
         };
-        String::new()
+        one_lines.push(new_entry);
+        self.format_one_line_return.clone()
     }
     fn format_passed_test_header(&self) -> String {
         *self.format_passed_test_called.borrow_mut() = true;
@@ -65,9 +61,10 @@ impl Mock {
     pub fn new() -> Mock {
         Mock {
             format_diff_called: Rc::new(RefCell::new(new_empty_format_diff_inputs())),
-            format_one_line_called: Rc::new(RefCell::new(new_empty_format_one_line_inputs())),
+            format_one_line_called: Rc::new(RefCell::new(vec![])),
             format_passed_test_called: Rc::new(RefCell::new(false)),
             format_failed_test_called: Rc::new(RefCell::new(false)),
+            format_one_line_return: String::new(),
         }
     }
     pub fn format_passed_test_called(&self) -> bool {
@@ -76,12 +73,10 @@ impl Mock {
 
     pub fn format_diff_called_with(&self, expected: &String, actual: &String) -> bool {
         let format_inputs = self.format_diff_called.borrow();
-        println!("Expected :{:?}\n", format_inputs);
         let format = FormatDiffInputs {
             expected: expected.clone(),
             actual: actual.clone(),
         };
-        println!("Actual :{:?}\n", format);
         *format_inputs == format
     }
 
@@ -91,10 +86,16 @@ impl Mock {
 
     pub fn format_one_line_called_with(&self, tag: &String, comment: &String) -> bool {
         let format_inputs = self.format_one_line_called.borrow();
+        println!("Expected :{:?}\n", format_inputs);
         let format = FormatOneLineInputs {
             tag: tag.clone(),
             comment: comment.clone(),
         };
-        *format_inputs == format
+        for format_input in &*format_inputs {
+            if format_input == &format {
+                return true;
+            }
+        }
+        false
     }
 }
