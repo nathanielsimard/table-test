@@ -36,10 +36,10 @@ fn main() {
         ),
     ];
 
-    for (validator, (mut person, new_name), expected) in table_test!(table) {
+    for (test_case, (mut person, new_name), expected) in table_test!(table) {
         person.change_name(new_name);
 
-        validator
+        test_case
             .given("a person")
             .when(&format!("{}{}", "change name to ", new_name))
             .then(&format!("{}{}", "new name is ", expected.name))

@@ -1,6 +1,6 @@
 [package]
 name = "table-test"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["nathaniel <nathaniel.simard@outlook.com>"]
 description = "Improve table testing in Rust"
 repository = "https://github.com/nathanielsimard/table-test"
@@ -8,7 +8,7 @@ license = "MIT"
 readme="README.md"
 exclude = [
     "scripts/*",
-    "assets/*"
+    "examples_outputs/*"
 ]
 
 [dependencies]

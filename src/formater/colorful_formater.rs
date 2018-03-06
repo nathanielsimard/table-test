@@ -64,5 +64,5 @@ fn diff(expected: &String, actual: &String) -> String {
             }
         }
     }
-    String::from(format!("  {}\n  {}\n", actual, expected))
+    String::from(format!("  {}\n  {}\n", expected, actual))
 }

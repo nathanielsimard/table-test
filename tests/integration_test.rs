@@ -18,10 +18,10 @@ fn given_correct_add_function_when_use_table_test_then_no_panic() {
         ((0, 1, -6), -5),
     ];
 
-    for (validator, (input_1, input_2, input_3), expected) in table_test!(table) {
+    for (test_case, (input_1, input_2, input_3), expected) in table_test!(table) {
         let actual = correct_add(input_1, input_2, input_3);
 
-        validator
+        test_case
             .given(&format!("{}, {}, {}", input_1, input_2, input_3))
             .when("add")
             .then(&format!("it returns {}", expected))
@@ -39,10 +39,10 @@ fn given_incorrect_add_function_when_use_table_test_then_panic() {
         ((0, 1, -6), -5),
     ];
 
-    for (validator, (input_1, input_2, input_3), expected) in table_test!(table) {
+    for (test_case, (input_1, input_2, input_3), expected) in table_test!(table) {
         let actual = incorrect_add(input_1, input_2, input_3);
 
-        validator
+        test_case
             .given(&format!("{}, {}, {}", input_1, input_2, input_3))
             .when("add")
             .then(&format!("it returns {}", expected))

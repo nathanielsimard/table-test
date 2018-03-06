@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OUT_DIR='examples_outputs'
-declare -a examples=("mutable_struct" "multiple_inputs" "multiple_outputs")
+declare -a examples=("mutable_struct" "multiple_inputs" "multiple_outputs" "custom_comments")
 
 if [ ! -d aha ]; then
 	git clone https://github.com/theZiz/aha

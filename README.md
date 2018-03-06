@@ -14,7 +14,7 @@ Specify this crate as `[dev-dependencies]`.
 
 ```toml
 [dev-dependencies]
-table_test = "0.1.1"
+table_test = "0.2.0"
 ```
 
 ```rust
@@ -23,8 +23,10 @@ table_test = "0.1.1"
 extern crate table_test;
 ```
 
-The table iterator returns a tuple `(validator, input, expected)`.
+The table iterator returns a tuple `(test_case, input, expected)`.
 If you have more than one input, just use a tuple of inputs.
+The `test_case` allows you to add comments like `given` `when` and `then`, but also `description` and `custom` giving you the freedom to log your tests the best way possible.
+
 ## Examples
 
 If we make a simple test for an `add` function that takes two values as input:
@@ -60,3 +62,5 @@ But the gain is when we work with something more complex.
 The example [here](examples/mutable_struct.rs) test the changing name method and the result looks like this:
 
 ![mutable struct](https://github.com/nathanielsimard/table-test/blob/master/examples_outputs/mutable_struct.png)
+
+More examples can be found in the examples folder.

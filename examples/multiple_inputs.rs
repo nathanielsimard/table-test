@@ -13,10 +13,10 @@ fn main() {
         ((2, 2), 4),
     ];
 
-    for (validator, (input_1, input_2), expected) in table_test!(table) {
+    for (test_case, (input_1, input_2), expected) in table_test!(table) {
         let actual = add(input_1, input_2);
 
-        validator
+        test_case
             .given(&format!("{}, {}", input_1, input_2))
             .when("add")
             .then(&format!("it should be {}", expected))

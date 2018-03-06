@@ -69,8 +69,8 @@ mod tests {
             ("worst name ever", false),
         ]);
 
-        for (validator, name, expected) in table {
-            validator
+        for (test_case, name, expected) in table {
+            test_case
                 .given(name)
                 .when("validate is beautiful")
                 .then(&format!("{}", expected))
@@ -82,8 +82,8 @@ mod tests {
     pub fn given_wonderful_names_when_validate_is_beautiful_then_table_dont_panic() {
         let table = Table::new(vec![("a beautiful name", true), ("an amazing name", true)]);
 
-        for (validator, name, expected) in table {
-            validator
+        for (test_case, name, expected) in table {
+            test_case
                 .given(name)
                 .when("validate is beatifull")
                 .then(&format!("{}", expected))
