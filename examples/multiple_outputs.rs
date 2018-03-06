@@ -12,26 +12,20 @@ fn main() {
         let mut actuals = input.split_whitespace();
 
         let name = actuals.next();
-        validator
-            .clone()
+        let validator = validator
             .given("a name and surname")
-            .when("split name")
-            .then("return name")
+            .when("split whitespace")
+            .then("first next returns the name")
             .assert_eq(Some(expected_1), name);
 
         let surname = actuals.next();
-        validator
-            .clone()
-            .given("a name and surname")
-            .when("split surname")
-            .then("return surname")
+        let validator = validator
+            .then("second next returns the surname")
             .assert_eq(Some(expected_2), surname);
 
         let none = actuals.next();
         validator
-            .given("a name and a surname")
-            .when("there is no more split")
-            .then("None")
+            .then("third next returns None")
             .assert_eq(None, none);
     }
 }

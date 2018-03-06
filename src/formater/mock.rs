@@ -4,65 +4,52 @@ use std::rc::Rc;
 
 #[derive(Clone)]
 pub struct Mock {
-    format_passed_test_called: Rc<RefCell<FormatPassedTestInputs>>,
-    format_failed_test_called: Rc<RefCell<FormatFailedTestInputs>>,
+    format_one_line_called: Rc<RefCell<Vec<FormatOneLineInputs>>>,
+    format_diff_called: Rc<RefCell<FormatDiffInputs>>,
+    format_passed_test_called: Rc<RefCell<bool>>,
+    format_failed_test_called: Rc<RefCell<bool>>,
+    pub format_one_line_return: String,
 }
 
 #[derive(PartialEq, Debug)]
-struct FormatPassedTestInputs {
-    given: String,
-    when: String,
-    then: String,
+struct FormatOneLineInputs {
+    tag: String,
+    comment: String,
 }
 
 #[derive(PartialEq, Debug)]
-struct FormatFailedTestInputs {
-    given: String,
-    when: String,
-    then: String,
+struct FormatDiffInputs {
     expected: String,
     actual: String,
 }
 
-fn new_empty_passed_inputs() -> FormatPassedTestInputs {
-    FormatPassedTestInputs {
-        given: String::from(""),
-        when: String::from(""),
-        then: String::from(""),
-    }
-}
-
-fn new_empty_failed_inputs() -> FormatFailedTestInputs {
-    FormatFailedTestInputs {
-        given: String::from(""),
-        when: String::from(""),
-        then: String::from(""),
+fn new_empty_format_diff_inputs() -> FormatDiffInputs {
+    FormatDiffInputs {
         expected: String::from(""),
         actual: String::from(""),
     }
 }
 
 impl Formater for Mock {
-    fn format_passed_test(&self, given: &String, when: &String, then: &String) -> String {
-        *self.format_passed_test_called.borrow_mut() = FormatPassedTestInputs {
-            given: given.clone(),
-            when: when.clone(),
-            then: then.clone(),
+    fn format_one_line(&self, tag: &String, comment: &String) -> String {
+        let mut one_lines = self.format_one_line_called.borrow_mut();
+        let new_entry = FormatOneLineInputs {
+            tag: tag.clone(),
+            comment: comment.clone(),
         };
+        one_lines.push(new_entry);
+        self.format_one_line_return.clone()
+    }
+    fn format_passed_test_header(&self) -> String {
+        *self.format_passed_test_called.borrow_mut() = true;
         String::new()
     }
-    fn format_failed_test(
-        &self,
-        given: &String,
-        when: &String,
-        then: &String,
-        expected: &String,
-        actual: &String,
-    ) -> String {
-        *self.format_failed_test_called.borrow_mut() = FormatFailedTestInputs {
-            given: given.clone(),
-            when: when.clone(),
-            then: then.clone(),
+    fn format_failed_test_header(&self) -> String {
+        *self.format_failed_test_called.borrow_mut() = true;
+        String::new()
+    }
+    fn format_diff(&self, expected: &String, actual: &String) -> String {
+        *self.format_diff_called.borrow_mut() = FormatDiffInputs {
             expected: expected.clone(),
             actual: actual.clone(),
         };
@@ -73,41 +60,42 @@ impl Formater for Mock {
 impl Mock {
     pub fn new() -> Mock {
         Mock {
-            format_passed_test_called: Rc::new(RefCell::new(new_empty_passed_inputs())),
-            format_failed_test_called: Rc::new(RefCell::new(new_empty_failed_inputs())),
+            format_diff_called: Rc::new(RefCell::new(new_empty_format_diff_inputs())),
+            format_one_line_called: Rc::new(RefCell::new(vec![])),
+            format_passed_test_called: Rc::new(RefCell::new(false)),
+            format_failed_test_called: Rc::new(RefCell::new(false)),
+            format_one_line_return: String::new(),
         }
     }
-    pub fn format_passed_test_called_with(
-        &self,
-        given: &String,
-        when: &String,
-        then: &String,
-    ) -> bool {
-        let format_inputs = self.format_passed_test_called.borrow_mut();
-        let format = FormatPassedTestInputs {
-            given: given.clone(),
-            when: when.clone(),
-            then: then.clone(),
-        };
-        *format_inputs == format
+    pub fn format_passed_test_called(&self) -> bool {
+        *self.format_passed_test_called.borrow()
     }
 
-    pub fn format_failed_test_called_with(
-        &self,
-        given: &String,
-        when: &String,
-        then: &String,
-        expected: &String,
-        actual: &String,
-    ) -> bool {
-        let format_inputs = self.format_failed_test_called.borrow();
-        let format = FormatFailedTestInputs {
-            given: given.clone(),
-            when: when.clone(),
-            then: then.clone(),
+    pub fn format_diff_called_with(&self, expected: &String, actual: &String) -> bool {
+        let format_inputs = self.format_diff_called.borrow();
+        let format = FormatDiffInputs {
             expected: expected.clone(),
             actual: actual.clone(),
         };
         *format_inputs == format
+    }
+
+    pub fn format_failed_test_called(&self) -> bool {
+        *self.format_failed_test_called.borrow()
+    }
+
+    pub fn format_one_line_called_with(&self, tag: &String, comment: &String) -> bool {
+        let format_inputs = self.format_one_line_called.borrow();
+        println!("Expected :{:?}\n", format_inputs);
+        let format = FormatOneLineInputs {
+            tag: tag.clone(),
+            comment: comment.clone(),
+        };
+        for format_input in &*format_inputs {
+            if format_input == &format {
+                return true;
+            }
+        }
+        false
     }
 }

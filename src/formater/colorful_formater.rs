@@ -6,35 +6,30 @@ use formater::Formater;
 pub struct ColorfulFormater;
 
 impl Formater for ColorfulFormater {
-    fn format_failed_test(
-        &self,
-        given: &String,
-        when: &String,
-        then: &String,
-        expected: &String,
-        actual: &String,
-    ) -> String {
-        let status = format!(
+    fn format_one_line(&self, tag: &String, comment: &String) -> String {
+        String::from(format!("{} {}\n", Cyan.paint(tag.clone()), comment))
+    }
+
+    fn format_diff(&self, expected: &String, actual: &String) -> String {
+        diff(expected, actual)
+    }
+
+    fn format_failed_test_header(&self) -> String {
+        String::from(format!(
             "{}{}{}\n",
             "[",
             Red.bold().paint(String::from("Failed")),
             "]"
-        );
-        let given_when_then = format_core(given, when, then);
-        let actual = format!("{}\n", diff(expected, actual));
-
-        return String::from(format!("{}{}{}", status, given_when_then, actual));
+        ))
     }
 
-    fn format_passed_test(&self, given: &String, when: &String, then: &String) -> String {
-        let status = format!(
+    fn format_passed_test_header(&self) -> String {
+        String::from(format!(
             "{}{}{}\n",
             "[",
             Green.bold().paint(String::from("Passed")),
             "]"
-        );
-        let given_when_then = format_core(given, when, then);
-        return String::from(format!("{}{}", status, given_when_then));
+        ))
     }
 }
 
@@ -42,14 +37,6 @@ impl ColorfulFormater {
     pub fn new() -> ColorfulFormater {
         ColorfulFormater {}
     }
-}
-
-fn format_core(given: &String, when: &String, then: &String) -> String {
-    let given = format!("{}{}\n", Cyan.paint("Given "), given);
-    let when = format!("{}{}\n", Cyan.paint("When "), when);
-    let then = format!("{}{}\n", Cyan.paint("Then "), then);
-
-    return String::from(format!("{}{}{}", given, when, then));
 }
 
 fn diff(expected: &String, actual: &String) -> String {
@@ -77,5 +64,5 @@ fn diff(expected: &String, actual: &String) -> String {
             }
         }
     }
-    String::from(format!("  {}\n  {}", actual, expected))
+    String::from(format!("  {}\n  {}\n", actual, expected))
 }

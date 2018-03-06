@@ -2,7 +2,7 @@ use std::iter::Iterator;
 use std::vec::IntoIter;
 use std::rc::Rc;
 use std::cell::RefCell;
-use validator::Validator;
+use test_case::TestCase;
 use ansi_term::Colour::*;
 
 pub struct Table<I, E> {
@@ -25,23 +25,27 @@ impl<I, E> Drop for Table<I, E> {
     fn drop(&mut self) {
         let nb_test_failed = *self.nb_test_failed.borrow();
         if nb_test_failed > 0 {
-            println!("\n--------------------");
+            let header = "\n--------------------\n";
             let nb_test_passed = Green
                 .bold()
                 .paint(format!("{}", self.nb_of_tests - nb_test_failed));
             let nb_test_failed = Red.bold().paint(format!("{}", nb_test_failed));
-            println!("{} Passed {} Failed\n", nb_test_passed, nb_test_failed);
+
+            println!(
+                "{}{} Passed {} Failed\n",
+                header, nb_test_passed, nb_test_failed
+            );
             panic!("Test Failed");
         }
     }
 }
 
 impl<I, E> Iterator for Table<I, E> {
-    type Item = (Validator, I, E);
+    type Item = (TestCase, I, E);
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(value) = self.values.next() {
             Some((
-                Validator::new(Rc::clone(&self.nb_test_failed)),
+                TestCase::new(Rc::clone(&self.nb_test_failed)),
                 value.0,
                 value.1,
             ))
