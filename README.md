@@ -14,13 +14,13 @@ Specify this crate as `[dev-dependencies]`.
 
 ```toml
 [dev-dependencies]
-table_test = "0.2.0"
+table-test = "0.2.0"
 ```
 
 ```rust
 #[cfg(test)] // <-- not needed in integration tests
 #[macro_use]
-extern crate table_test;
+extern crate table-test;
 ```
 
 The table iterator returns a tuple `(test_case, input, expected)`.
