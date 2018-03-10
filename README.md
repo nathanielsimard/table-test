@@ -20,7 +20,7 @@ table-test = "0.2.0"
 ```rust
 #[cfg(test)] // <-- not needed in integration tests
 #[macro_use]
-extern crate table-test;
+extern crate table_test;
 ```
 
 The table iterator returns a tuple `(test_case, input, expected)`.
