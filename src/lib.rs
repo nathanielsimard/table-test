@@ -1,3 +1,6 @@
+#[cfg(test)]
+extern crate mock_it;
+
 extern crate ansi_term;
 extern crate difference;
 

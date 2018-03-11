@@ -1,101 +1,38 @@
 use formater::Formater;
-use std::cell::RefCell;
-use std::rc::Rc;
+use mock_it::Mock;
+use mock_it::Matcher;
+use mock_it::Matcher::Val;
 
 #[derive(Clone)]
-pub struct Mock {
-    format_one_line_called: Rc<RefCell<Vec<FormatOneLineInputs>>>,
-    format_diff_called: Rc<RefCell<FormatDiffInputs>>,
-    format_passed_test_called: Rc<RefCell<bool>>,
-    format_failed_test_called: Rc<RefCell<bool>>,
-    pub format_one_line_return: String,
+pub struct FormaterMock {
+    pub format_one_line: Mock<(Matcher<String>, Matcher<String>), String>,
+    pub format_passed_test_header: Mock<(), String>,
+    pub format_failed_test_header: Mock<(), String>,
+    pub format_diff: Mock<(String, String), String>,
 }
 
-#[derive(PartialEq, Debug)]
-struct FormatOneLineInputs {
-    tag: String,
-    comment: String,
-}
-
-#[derive(PartialEq, Debug)]
-struct FormatDiffInputs {
-    expected: String,
-    actual: String,
-}
-
-fn new_empty_format_diff_inputs() -> FormatDiffInputs {
-    FormatDiffInputs {
-        expected: String::from(""),
-        actual: String::from(""),
+impl FormaterMock {
+    pub fn new() -> FormaterMock {
+        FormaterMock {
+            format_one_line: Mock::new(String::from("")),
+            format_passed_test_header: Mock::new(String::from("")),
+            format_failed_test_header: Mock::new(String::from("")),
+            format_diff: Mock::new(String::from("")),
+        }
     }
 }
 
-impl Formater for Mock {
+impl Formater for FormaterMock {
     fn format_one_line(&self, tag: &String, comment: &String) -> String {
-        let mut one_lines = self.format_one_line_called.borrow_mut();
-        let new_entry = FormatOneLineInputs {
-            tag: tag.clone(),
-            comment: comment.clone(),
-        };
-        one_lines.push(new_entry);
-        self.format_one_line_return.clone()
+        self.format_one_line.called((Val(tag.clone()), Val(comment.clone())))
     }
     fn format_passed_test_header(&self) -> String {
-        *self.format_passed_test_called.borrow_mut() = true;
-        String::new()
+        self.format_passed_test_header.called(())
     }
     fn format_failed_test_header(&self) -> String {
-        *self.format_failed_test_called.borrow_mut() = true;
-        String::new()
+        self.format_failed_test_header.called(())
     }
     fn format_diff(&self, expected: &String, actual: &String) -> String {
-        *self.format_diff_called.borrow_mut() = FormatDiffInputs {
-            expected: expected.clone(),
-            actual: actual.clone(),
-        };
-        String::new()
-    }
-}
-
-impl Mock {
-    pub fn new() -> Mock {
-        Mock {
-            format_diff_called: Rc::new(RefCell::new(new_empty_format_diff_inputs())),
-            format_one_line_called: Rc::new(RefCell::new(vec![])),
-            format_passed_test_called: Rc::new(RefCell::new(false)),
-            format_failed_test_called: Rc::new(RefCell::new(false)),
-            format_one_line_return: String::new(),
-        }
-    }
-    pub fn format_passed_test_called(&self) -> bool {
-        *self.format_passed_test_called.borrow()
-    }
-
-    pub fn format_diff_called_with(&self, expected: &String, actual: &String) -> bool {
-        let format_inputs = self.format_diff_called.borrow();
-        let format = FormatDiffInputs {
-            expected: expected.clone(),
-            actual: actual.clone(),
-        };
-        *format_inputs == format
-    }
-
-    pub fn format_failed_test_called(&self) -> bool {
-        *self.format_failed_test_called.borrow()
-    }
-
-    pub fn format_one_line_called_with(&self, tag: &String, comment: &String) -> bool {
-        let format_inputs = self.format_one_line_called.borrow();
-        println!("Expected :{:?}\n", format_inputs);
-        let format = FormatOneLineInputs {
-            tag: tag.clone(),
-            comment: comment.clone(),
-        };
-        for format_input in &*format_inputs {
-            if format_input == &format {
-                return true;
-            }
-        }
-        false
+        self.format_diff.called((expected.clone(), actual.clone()))
     }
 }

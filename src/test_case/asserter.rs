@@ -72,7 +72,8 @@ impl Asserter {
 #[cfg(test)]
 mod test {
     use super::*;
-    use formater::mock::Mock;
+    use formater::mock::FormaterMock;
+    use mock_it::Matcher::{Any, Val};
 
     #[test]
     fn test_assert_eq() {
@@ -82,19 +83,28 @@ mod test {
         ];
 
         for (val_1, val_2, nb_failed, format_failed_called, format_passed_called) in table {
-            let formater = Mock::new();
+            let formater = FormaterMock::new();
             let failed = Rc::new(RefCell::new(0));
             let mut asserter = Asserter::new(failed.clone(), Box::new(formater.clone()));
 
             asserter.assert_eq(val_1, val_2);
             asserter.format_test();
 
-            assert_eq!(format_failed_called, formater.format_failed_test_called());
             assert_eq!(
                 format_failed_called,
-                formater.format_diff_called_with(&format!("{:?}", val_1), &format!("{:?}", val_2))
+                formater.format_failed_test_header.was_called_with(()),
             );
-            assert_eq!(format_passed_called, formater.format_passed_test_called());
+            assert_eq!(
+                format_failed_called,
+                formater.format_diff.was_called_with((
+                    format!("{:?}", val_1).to_string(),
+                    format!("{:?}", val_2).to_string(),
+                ))
+            );
+            assert_eq!(
+                format_passed_called,
+                formater.format_passed_test_header.was_called_with(())
+            );
             assert_eq!(nb_failed, *failed.borrow());
         }
     }
@@ -107,26 +117,34 @@ mod test {
         ];
 
         for (val_1, val_2, nb_failed, format_failed_called, format_passed_called) in table {
-            let formater = Mock::new();
+            let formater = FormaterMock::new();
             let failed = Rc::new(RefCell::new(0));
             let mut asserter = Asserter::new(failed.clone(), Box::new(formater.clone()));
 
             asserter.assert_ne(val_1, val_2);
             asserter.format_test();
 
-            assert_eq!(format_failed_called, formater.format_failed_test_called());
             assert_eq!(
                 format_failed_called,
-                formater.format_diff_called_with(&format!("{:?}", val_2), &format!("{:?}", val_1))
+                formater.format_failed_test_header.was_called_with(()),
             );
-            assert_eq!(format_passed_called, formater.format_passed_test_called());
+            assert_eq!(
+                format_failed_called,
+                formater.format_diff.was_called_with((
+                    format!("{:?}", val_1).to_string(),
+                    format!("{:?}", val_2).to_string(),
+                ))
+            );
+            assert_eq!(
+                format_passed_called,
+                formater.format_passed_test_header.was_called_with(())
+            );
             assert_eq!(nb_failed, *failed.borrow());
         }
     }
-
     #[test]
     fn given_a_tag_and_a_comment_when_add_comment_then_formater_has_been_called() {
-        let formater = Mock::new();
+        let formater = FormaterMock::new();
         let failed = Rc::new(RefCell::new(0));
         let mut asserter = Asserter::new(failed.clone(), Box::new(formater.clone()));
         let tag = String::from("A Tag");
@@ -134,13 +152,21 @@ mod test {
 
         asserter.add_comment(tag.clone(), comment.clone());
 
-        assert!(formater.format_one_line_called_with(&tag, &comment));
+        assert!(
+            formater
+                .format_one_line
+                .was_called_with((Val(tag), Val(comment)))
+        );
     }
 
     #[test]
     fn given_a_tag_and_a_comment_when_add_comment_then_output_has_changed() {
-        let mut formater = Mock::new();
-        formater.format_one_line_return = "A Tag A comment".to_string();
+        let formater = FormaterMock::new();
+        formater
+            .format_one_line
+            .given((Any, Any))
+            .will_return("A Tag A comment".to_string());
+
         let failed = Rc::new(RefCell::new(0));
         let mut asserter = Asserter::new(failed.clone(), Box::new(formater.clone()));
         let tag = String::from("A Tag");
