@@ -14,7 +14,7 @@ Specify this crate as `[dev-dependencies]`.
 
 ```toml
 [dev-dependencies]
-table-test = "0.2.0"
+table-test = "0.2.1"
 ```
 
 ```rust

@@ -1,11 +1,13 @@
 [package]
 name = "table-test"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["nathanielsimard <nathaniel.simard@outlook.com>"]
 description = "Improve table testing in Rust"
 repository = "https://github.com/nathanielsimard/table-test"
 license = "MIT"
 readme="README.md"
+keywords = ["mock", "mocking", "unit-test", "testing"]
+categories = ["development-tools::testing"]
 exclude = [
     "scripts/*",
 ]
