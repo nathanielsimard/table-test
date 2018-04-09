@@ -6,7 +6,7 @@ description = "Improve table testing in Rust"
 repository = "https://github.com/nathanielsimard/table-test"
 license = "MIT"
 readme="README.md"
-keywords = ["mock", "mocking", "unit-test", "testing"]
+keywords = ["unit-test", "testing", "integration-test"]
 categories = ["development-tools::testing"]
 exclude = [
     "scripts/*",
